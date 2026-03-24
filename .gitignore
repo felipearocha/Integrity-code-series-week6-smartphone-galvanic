@@ -1,0 +1,4 @@
+linkedin/
+__pycache__/
+*.pyc
+.env
