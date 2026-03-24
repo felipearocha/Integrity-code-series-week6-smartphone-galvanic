@@ -169,9 +169,6 @@ Thin film thickness: 10-500 micrometers (depending on humidity/lint trapping).
     |-- assets/
     |-- notebooks/
     |   |-- week6_walkthrough.ipynb
-    |-- linkedin/
-    |   |-- post_draft.txt
-    |   |-- video_script.txt
     |-- docs/
     |   |-- technical_report.md
 
@@ -186,7 +183,3 @@ Thin film thickness: 10-500 micrometers (depending on humidity/lint trapping).
     python -m viz.plot_inverse_posterior
     python -m viz.plot_parameter_sensitivity
     python -m viz.generate_gif
-
-## Intended ZIP
-
-    integrity_code_series_week6_smartphone_galvanic.zip
