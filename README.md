@@ -2,6 +2,11 @@
 # Multi-Scale Galvanic Corrosion in Smartphone Charging Ports
 # Dissimilar Metal Electrochemistry with Inverse Parameter Estimation
 
+[![CI](https://github.com/felipearocha/Integrity-code-series-week6-smartphone-galvanic/actions/workflows/ci.yml/badge.svg)](https://github.com/felipearocha/Integrity-code-series-week6-smartphone-galvanic/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![Tests: 38 passing](https://img.shields.io/badge/tests-38%20passing-brightgreen.svg)](tests)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20172479.svg)](https://doi.org/10.5281/zenodo.20172479)
 
 ## Integrity Code Series
@@ -11,11 +16,12 @@ Part of an ongoing series of physics-first integrity simulators by Felipe Rocha:
 | # | Repo | Domain |
 |---|---|---|
 | Week 3 | [Integrity-code-series-3](https://github.com/felipearocha/Integrity-code-series-3) | F1 lap simulation (six coupled ODEs) |
-| Week 6 | [Integrity-code-series-week6-smartphone-galvanic](https://github.com/felipearocha/Integrity-code-series-week6-smartphone-galvanic) | Smartphone galvanic corrosion (Laplace + Butler-Volmer) |
+| **Week 6** | **[Integrity-code-series-week6-smartphone-galvanic](https://github.com/felipearocha/Integrity-code-series-week6-smartphone-galvanic)** | **Smartphone galvanic corrosion (Laplace + Butler-Volmer) — this repo** |
 | Week 7 | [integrity_code_series_week7_h2_lferw](https://github.com/felipearocha/integrity_code_series_week7_h2_lferw) | LF-ERW H2 conversion (B31.12 + NACE TM0316) |
 | Week 8 | [integrity-code-series-week8-creep-fatigue-heater](https://github.com/felipearocha/integrity-code-series-week8-creep-fatigue-heater) | Creep-fatigue 9Cr-1Mo (Norton/Omega + Coffin-Manson) |
 | Week 9 | [integrity-code-series-week9-cui](https://github.com/felipearocha/integrity-code-series-week9-cui) | CUI thermohygro-electrochemical (3 PDEs, Strang) |
 | Week 10 | [integrity-code-series-week-10_nnph_scc](https://github.com/felipearocha/integrity-code-series-week-10_nnph_scc) | NNpHSCC full-physics (Chen-Sutherby-Xing + BS 7910) |
+| Week 11 | [integrity-code-series-week11-erosion-corrosion-multiphase](https://github.com/felipearocha/integrity-code-series-week11-erosion-corrosion-multiphase) | Erosion-corrosion multiphase (NORSOK M-506 + DNV-RP-O501 + G119 + API 579) |
 | Bonus | [Vibration-Accelerated-Corrosion-Coupled-Mechano-Electrochemical-Simulation](https://github.com/felipearocha/Vibration-Accelerated-Corrosion-Coupled-Mechano-Electrochemical-Simulation) | Vibration-accelerated corrosion (SDOF + Butler-Volmer + Archard) |
 | Bonus | [synthetic-integrity-digital-twin-piml](https://github.com/felipearocha/synthetic-integrity-digital-twin-piml) | Physics-informed neural-network surrogate |
 | Bonus | [integrity-data-foundation](https://github.com/felipearocha/integrity-data-foundation) | Engineering data validation baseline |
@@ -63,7 +69,19 @@ inverse Bayesian parameter estimation, micro-to-macro scale bridging.
 
 New dimensions: Multi-scale coupling + Inverse parameter estimation.
 
-## Governing Physics
+## Escalation Table
+
+| Week | Topic | Key escalation |
+|------|-------|---------------|
+| 5 | Single-phase corrosion | 1D spatial PDE (chainage), forward LHS sweep |
+| **6** | **Smartphone galvanic** | **2D Laplace thin-film + multi-metal Butler-Volmer coupling + inverse Bayesian j0 estimation + micro-to-macro bridging** |
+
+## Governing Equations
+
+Every equation below is grounded in standard electrochemistry; the two calibration
+parameters (exchange current densities `j_0` and the oxide-growth coefficient `beta`)
+are tagged `[ASSUMED]`. Full rendered (MathJax) reference:
+**[docs/equations.html](docs/equations.html)** — open in any browser.
 
 ### Scale 1: Macro (Electrolyte Domain) - Laplace Equation
 
@@ -170,13 +188,8 @@ Thin film thickness: 10-500 micrometers (depending on humidity/lint trapping).
     |   |-- multi_scale_engine.py # Orchestrator coupling all scales
     |   |-- cybersecurity.py      # STRIDE threat model, audit logging, sensor validation
     |-- tests/
-    |   |-- test_butler_volmer.py
-    |   |-- test_laplace.py
-    |   |-- test_galvanic.py
-    |   |-- test_inverse.py
-    |   |-- test_temporal.py
-    |   |-- test_cybersecurity.py
-    |   |-- test_integration.py
+    |   |-- test_all.py            # 38 tests: Butler-Volmer, Laplace, galvanic,
+    |   |                          #   inverse, temporal, cybersecurity, integration
     |-- viz/
     |   |-- plot_potential_field.py
     |   |-- plot_current_density.py
@@ -185,10 +198,8 @@ Thin film thickness: 10-500 micrometers (depending on humidity/lint trapping).
     |   |-- plot_parameter_sensitivity.py
     |   |-- generate_gif.py
     |-- assets/
-    |-- notebooks/
-    |   |-- week6_walkthrough.ipynb
     |-- docs/
-    |   |-- technical_report.md
+    |   |-- equations.html         # rendered (MathJax) governing-equations reference
 
 ## Execution Order
 
@@ -201,6 +212,47 @@ Thin film thickness: 10-500 micrometers (depending on humidity/lint trapping).
     python -m viz.plot_inverse_posterior
     python -m viz.plot_parameter_sensitivity
     python -m viz.generate_gif
+
+## Cybersecurity (STRIDE)
+
+A full STRIDE threat model covers the sensor-driven corrosion-monitoring pipeline:
+Spoofing (falsified sensor data), Tampering (modified `j_0` calibration), Repudiation
+(denied parameter edits), Information disclosure (proprietary plating-stack extraction),
+Denial of service (malformed-data flooding), and Elevation of privilege (unauthorised
+prior edits). Runtime defences are a SHA-256 hash-chain audit log, sensor-envelope
+validation, physical-consistency checks, and data-poisoning (leave-one-out) detection.
+See `src/cybersecurity.py`.
+
+## Anti-Hallucination Note
+
+Every equation and constant carries an explicit source tier:
+
+- **T1 (standard / handbook):** Butler-Volmer electrode kinetics, the Laplace
+  current-continuity equation, Faraday's law of electrolysis, and mixed-potential
+  theory; the physical constants `F = 96485` C/mol and `R = 8.314` J·mol⁻¹·K⁻¹; and
+  the material properties `E_eq`, `M`, `n`, `rho` in the materials table.
+- **T2 (derived):** the effective-`j_0` reduction from the growing oxide resistance,
+  and the mixed-potential root solved from the T1 kinetics.
+- **T3 / [ASSUMED]:** the exchange current densities `j_0` (order-of-magnitude
+  estimates for thin-film NaCl — the target of the inverse module) and the oxide-growth
+  coefficient `beta` (a constitutive parameter requiring calibration). The electrolyte
+  proxy (0.5% NaCl, `kappa` ≈ 1.5 S/m) and the uniform-thin-film geometry are likewise
+  modelling assumptions.
+
+These tiers are applied honestly: where a value is a modelling assumption rather than a
+handbook or physical constant it is tagged `[ASSUMED]` in the README, in
+[`docs/equations.html`](docs/equations.html), and in the source, and is never presented
+as a measured or standard-derived quantity.
+
+## Disclaimer
+
+Research tool only. Not for design, fitness-for-service, or safety-critical decisions
+without site-specific calibration and independent PE review.
+
+## License
+
+MIT - Felipe Rocha. See [LICENSE](LICENSE).
+
 ---
 
 ## How to Cite

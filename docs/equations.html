@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Integrity Code Series — Week 6 — Governing Equations</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        tags: 'ams'
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root {
+      --navy: #1b3a5c;
+      --steel: #4c80b0;
+      --red: #8c2318;
+      --teal: #2e7d7b;
+      --charcoal: #333333;
+      --gold: #8B6914;
+      --bg: #fbfbfb;
+      --card: #ffffff;
+      --border: #e2e6ec;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 24px 96px 24px;
+      color: var(--charcoal);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+    header {
+      border-bottom: 2px solid var(--navy);
+      padding-bottom: 18px;
+      margin-bottom: 26px;
+    }
+    h1 { color: var(--navy); font-size: 26px; margin: 0 0 6px 0; }
+    .subtitle { color: var(--steel); font-size: 14px; margin: 0; }
+    h2 {
+      color: var(--navy);
+      border-left: 4px solid var(--teal);
+      padding-left: 12px;
+      margin-top: 38px;
+      font-size: 19px;
+    }
+    h3 { color: var(--charcoal); margin-top: 26px; margin-bottom: 6px; font-size: 15px; font-weight: 700; }
+    .eq-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin: 12px 0 18px 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .src { font-size: 12px; color: var(--gold); font-style: italic; margin: 6px 0 10px 0; }
+    .code-ref {
+      font-family: "SF Mono", "Consolas", "Menlo", monospace;
+      font-size: 11.5px;
+      color: var(--steel);
+      background: #f1f4f7;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .toc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 20px;
+      margin-bottom: 30px;
+    }
+    .toc ol { margin: 4px 0 0 0; padding-left: 22px; }
+    .toc a { color: var(--navy); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; color: var(--red); }
+    .note {
+      background: #fff8e6;
+      border-left: 3px solid var(--gold);
+      padding: 10px 14px;
+      margin: 14px 0;
+      font-size: 13px;
+      color: #5b4a1d;
+    }
+    .disclaimer {
+      margin-top: 50px;
+      padding: 16px 20px;
+      background: #fef0ee;
+      border-left: 3px solid var(--red);
+      font-size: 13px;
+      color: #6b2418;
+    }
+    footer {
+      margin-top: 36px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Integrity Code Series — Week 6</h1>
+  <p class="subtitle">Multi-Scale Galvanic Corrosion in Smartphone Charging Ports — Governing Equations Reference</p>
+  <p class="subtitle"><strong>Felipe Rocha</strong></p>
+</header>
+
+<div class="toc">
+  <strong>Contents</strong>
+  <ol>
+    <li><a href="#macro">Macro Scale — Laplace Equation (Electrolyte)</a></li>
+    <li><a href="#micro">Micro Scale — Butler-Volmer Kinetics</a></li>
+    <li><a href="#oxide">Oxide Film Growth &amp; Effective Kinetics</a></li>
+    <li><a href="#temporal">Temporal Evolution — Faradaic Mass Loss</a></li>
+    <li><a href="#galvanic">Galvanic Coupling — Mixed Potential</a></li>
+    <li><a href="#inverse">Inverse Estimation — Bayesian MCMC</a></li>
+  </ol>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<h2 id="macro">1. Macro Scale — Laplace Equation (Electrolyte Domain)</h2>
+
+<h3>1.1 Potential distribution in the thin film</h3>
+<div class="eq-card">
+In the thin electrolyte film, assuming electroneutrality and negligible convection, the electrolyte potential $\phi$ satisfies current continuity:
+$$
+\nabla\!\cdot\!\bigl(\kappa\,\nabla\phi\bigr) \;=\; 0
+$$
+with $\phi$ the electrolyte potential [V] and $\kappa$ the electrolyte conductivity [S/m]. For a film of thickness $\delta_e$ this reduces to a 2D problem on the port surface (8.34 mm × 2.56 mm USB-C receptacle cross section).
+<p class="src">SOURCE: Laplace equation / current continuity for an ohmic electrolyte (standard electrochemistry, constant $\kappa$). Electrolyte: 0.5% NaCl sweat proxy, $\kappa \approx 1.5$ S/m [ASSUMED proxy].</p>
+<p>Code: <span class="code-ref">src/laplace_solver.py → solve_laplace_2d, extract_boundary_currents</span>.</p>
+</div>
+
+<div class="note">Boundary conditions: Butler-Volmer nonlinear-Neumann flux at each metal surface; zero-flux Neumann ($\partial\phi/\partial n = 0$) at the plastic insulator housing; a 5 V bias offset on the contact pins under charging.</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<h2 id="micro">2. Micro Scale — Butler-Volmer Kinetics</h2>
+
+<h3>2.1 Interfacial current density</h3>
+<div class="eq-card">
+At each metal surface $k$ the interfacial current density follows Butler-Volmer electrode kinetics:
+$$
+j_k \;=\; j_{0,k}\left\{\exp\!\left[\frac{\alpha_{a,k}\,F\,\eta_k}{R\,T}\right] - \exp\!\left[-\frac{\alpha_{c,k}\,F\,\eta_k}{R\,T}\right]\right\}
+$$
+with overpotential
+$$
+\eta_k \;=\; \phi_{\mathrm{metal},k} - \phi_{\mathrm{electrolyte}} - E_{\mathrm{eq},k}
+$$
+where $j_{0,k}$ is the exchange current density [A/m²], $\alpha_{a,k},\alpha_{c,k}$ the anodic/cathodic transfer coefficients, and $E_{\mathrm{eq},k}$ the equilibrium potential of metal $k$.
+<p class="src">SOURCE: Butler-Volmer electrode-kinetics equation (standard electrochemistry). Constants $F = 96485$ C/mol, $R = 8.314$ J·mol⁻¹·K⁻¹ (physical constants); $T$ uniform at 35 °C (body-contact). $E_{\mathrm{eq},k}$ from the materials table (vs SHE). Exchange current densities $j_{0,k}$ are <strong>[ASSUMED]</strong> order-of-magnitude estimates for thin-film NaCl and are the target of the inverse module (§6).</p>
+<p>Code: <span class="code-ref">src/butler_volmer.py → butler_volmer_current, tafel_anodic, tafel_cathodic, compute_metal_current</span>.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<h2 id="oxide">3. Oxide Film Growth &amp; Effective Kinetics</h2>
+
+<h3>3.1 Protective-oxide resistance</h3>
+<div class="eq-card">
+A protective oxide film builds resistance in proportion to the anodic charge passed, feeding back into the effective exchange current density and coupling the micro and temporal scales:
+$$
+R_{\mathrm{oxide},k}(t) \;=\; R_{\mathrm{oxide},0,k} \;+\; \beta_k\!\int j_{\mathrm{anodic},k}\,\mathrm{d}t
+$$
+<div class="note">$\beta_k$ (oxide growth rate) is an <strong>[ASSUMED]</strong> constitutive parameter requiring calibration; oxide films are taken as compact and following linear growth with charge passed. Au dissolution is treated as negligible under normal conditions (included for completeness).</div>
+<p class="src">SOURCE: linear (charge-proportional) oxide-growth constitutive model [ASSUMED]; $R_{\mathrm{oxide},0,k}$ initial film resistance.</p>
+<p>Code: <span class="code-ref">src/butler_volmer.py → effective_j0</span>.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<h2 id="temporal">4. Temporal Evolution — Faradaic Mass Loss</h2>
+
+<h3>4.1 Dissolution and thickness loss</h3>
+<div class="eq-card">
+Mass loss per unit area of metal $k$ follows Faraday's law of electrolysis, driven by the anodic current density:
+$$
+\frac{\mathrm{d}m_k}{\mathrm{d}t} \;=\; \frac{M_k}{n_k\,F}\,j_{\mathrm{anodic},k},
+\qquad
+\frac{\mathrm{d}h_k}{\mathrm{d}t} \;=\; \frac{1}{\rho_k}\,\frac{\mathrm{d}m_k}{\mathrm{d}t}
+$$
+with $M_k$ the molar mass [kg/mol], $n_k$ the electrons transferred per atom dissolved, and $\rho_k$ the density [kg/m³].
+<p class="src">SOURCE: Faraday's law of electrolysis. $M_k$, $n_k$, $\rho_k$ from the materials table (handbook values).</p>
+<p>Code: <span class="code-ref">src/temporal_evolution.py → rhs_temporal, simulate_charge_cycles, estimate_port_lifetime</span>.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<h2 id="galvanic">5. Galvanic Coupling — Mixed-Potential Constraint</h2>
+
+<h3>5.1 Charge-balance at the couple potential</h3>
+<div class="eq-card">
+At the mixed (couple) potential the total anodic current equals the total cathodic current over the exposed areas $A_k$:
+$$
+\sum_k A_k\,j_{\mathrm{anodic},k}\bigl(\phi_{\mathrm{couple}}\bigr) \;=\; \sum_k A_k\,j_{\mathrm{cathodic},k}\bigl(\phi_{\mathrm{couple}}\bigr)
+$$
+The mixed potential $\phi_{\mathrm{couple}}$ is the root of the net-current equation; area ratios drive the local dissolution rate of the anodic member.
+<p class="src">SOURCE: mixed-potential theory (charge-conservation over coupled electrodes, standard electrochemistry).</p>
+<p>Code: <span class="code-ref">src/galvanic_coupling.py → net_galvanic_current, solve_mixed_potential, compute_area_ratio_sensitivity</span>.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<h2 id="inverse">6. Inverse Estimation — Bayesian MCMC</h2>
+
+<h3>6.1 Gaussian likelihood, uniform log-prior, Metropolis-Hastings</h3>
+<div class="eq-card">
+Exchange current densities $j_{0,k}$ are estimated from sparse current observations by Metropolis-Hastings sampling of the posterior. The likelihood is Gaussian in the measured couple current, the prior uniform in $\log_{10} j_0$ space:
+$$
+\ln L \;=\; -\tfrac{1}{2}\sum_i \frac{\bigl(I_{\mathrm{pred},i} - I_{\mathrm{obs},i}\bigr)^2}{\sigma_i^{2}},
+\qquad
+\pi\bigl(\log_{10} j_0\bigr) \;=\;
+\begin{cases}
+\text{const}, & \text{within bounds}\\[2pt]
+-\infty, & \text{otherwise}
+\end{cases}
+$$
+$$
+\ln \pi(\theta\mid \mathcal{D}) \;=\; \ln L \;+\; \ln \pi(\theta) \;+\; \text{const}
+$$
+<p class="src">SOURCE: Gaussian-likelihood Bayesian inference with Metropolis-Hastings MCMC (standard formulation, as implemented). Proposal: Gaussian in $\log_{10}$ space; priors are the per-metal $j_0$ bounds in the config.</p>
+<p>Code: <span class="code-ref">src/inverse_bayesian.py → log_likelihood, log_prior, run_mcmc, compute_posterior_statistics</span>.</p>
+</div>
+
+<div class="disclaimer">
+<strong>Disclaimer:</strong> Research tool only. Not for design, fitness-for-service, or safety-critical decisions without site-specific calibration and independent PE review. Equations follow standard electrochemistry (Laplace/current continuity, Butler-Volmer kinetics, Faraday's law, mixed-potential theory); constants not read from a physical-constant table or materials handbook — the exchange current densities $j_{0,k}$ and the oxide-growth coefficient $\beta_k$ — are marked <code>[ASSUMED]</code> and require calibration. Runs are SHA-256 hash-chained; verify with the audit chain in <code>src/cybersecurity.py</code>.
+</div>
+
+<footer>
+  Integrity Code Series — Week 6 · Felipe Rocha · 38 / 38 tests passing<br>
+  Browse the rendered panels in <code>assets/</code> for visual results.
+</footer>
+
+</body>
+</html>
